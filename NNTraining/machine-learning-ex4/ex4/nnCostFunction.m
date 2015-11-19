@@ -86,6 +86,26 @@ for i = 1:columns(output)
   J += costi;
 endfor
 J = J/m
+%Add the regularization
+Theta1WithoutBias = Theta1(:,2:size(Theta1,2));
+Theta2WithoutBias = Theta2(:, 2:size(Theta2, 2));
+SumofThetaSquares = 0;
+for i = 1:rows(Theta1WithoutBias)
+  for j = 1:columns(Theta1WithoutBias)
+    SumofThetaSquares = SumofThetaSquares + Theta1WithoutBias(i,j)*Theta1WithoutBias(i,j);
+  endfor
+endfor
+for i = 1:rows(Theta2WithoutBias)
+  for j = 1:columns(Theta2WithoutBias)
+    SumofThetaSquares = SumofThetaSquares + Theta2WithoutBias(i,j)*Theta2WithoutBias(i,j);
+  endfor
+endfor
+lambda = 1
+SumofThetaSquares
+Regularization = SumofThetaSquares*lambda/(2*m)
+J = J + Regularization;
+
+
   
       
 
