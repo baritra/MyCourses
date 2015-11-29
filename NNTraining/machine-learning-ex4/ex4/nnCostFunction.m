@@ -21,6 +21,8 @@ Theta1 = reshape(nn_params(1:hidden_layer_size * (input_layer_size + 1)), ...
 
 Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):end), ...
                  num_labels, (hidden_layer_size + 1));
+                 
+              
 
 % Setup some useful variables
 m = size(X, 1);
@@ -66,9 +68,10 @@ Theta2_grad = zeros(size(Theta2));
 
 % Part 1 implementation of the cost function
 XwithOnes = [ones(size(X, 1), 1), X]';
-alpha1 = sigmoid(Theta1*XwithOnes);
-alpha1WithOnes = [ones(1, size(alpha1, 2)); alpha1];
-output = sigmoid(Theta2*alpha1WithOnes);
+z2 = Theta1*XwithOnes;
+alpha2 = sigmoid(z2);
+alpha2WithOnes = [ones(1, size(alpha2, 2)); alpha2];
+output = sigmoid(Theta2*alpha2WithOnes);
 %alpha2 is the predicted value with dimension 10x5000. ith column basically is the output
 %vector or the predicted result for the ith input. We need to calculate the cost by first 
 %determining what this predicted vector actually predicts, i.e., which digit we are predicting
@@ -77,7 +80,7 @@ J = 0
 for i = 1:columns(output)
   %The y-value represents the actual letter. Convert that to the 10-element vector with the correponding
   %element as 1 and the rest as 0. This will facilitate comparison with the actual predicted vector
-  correctValue = zeros(10,1);
+  correctValue = zeros(num_labels,1);
   correctValue(y(i,1), 1) = 1;
   costi = 0;
   for j = 1:rows(output)
@@ -94,31 +97,33 @@ Regularization = SumofThetaSquares*lambda/(2*m);
 J = J + Regularization
 
 
-  
-      
 
+%back propagation algorithm
+for i = 1:m
+  %construct the y vector (correct value) corresponding to the ith input
+  correctValue = zeros(num_labels,1);
+  correctValue(y(i,1), 1) = 1;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  %the output of the neural net for example i
+  alpha3_i = output(:,i);
+  %error in the output units
+  delta3_i = alpha3_i - correctValue;
+  %error of the hidden layer
+  delta2_i = (Theta2WithoutBias'*delta3_i).*sigmoidGradient(z2(:,i));
+  %accumulate partial derivatives of cost function with respect to Theta2 for this training example
+  alpha2WithOnes_i = alpha2WithOnes(:,i);
+  Theta2_grad = Theta2_grad .+ delta3_i*alpha2WithOnes_i';
+  XWithBias_i = XwithOnes(:,i);
+  Theta1_grad = Theta1_grad .+ delta2_i*XWithBias_i';
+endfor
 % -------------------------------------------------------------
 
 % =========================================================================
-
+Theta1_grad = Theta1_grad/m;
+Theta1_grad_regularizationTerms = [zeros(rows(Theta1), 1), Theta1(:, 2:end)*(lambda/m)];
+Theta1_grad = Theta1_grad .+ Theta1_grad_regularizationTerms;
+Theta2_grad_regularizationTerms = [zeros(rows(Theta2), 1), Theta2(:, 2:end)*(lambda/m)];
+Theta2_grad = Theta2_grad/m .+ Theta2_grad_regularizationTerms;
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
 
