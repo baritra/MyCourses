@@ -8,11 +8,6 @@ function [C, sigma] = dataset3Params(X, y, Xval, yval)
 %
 
 % You need to return the following variables correctly.
-initialC = 0.01;
-initialSigma = 0.05;
-
-C = initialC;
-sigma = initialSigma;
 
 % ====================== YOUR CODE HERE ======================
 % Instructions: Fill in this function to return the optimal C and sigma
@@ -25,31 +20,27 @@ sigma = initialSigma;
 %  Note: You can compute the prediction error using 
 %        mean(double(predictions ~= yval))
 %
-optC = C;
-optSigma = sigma;
+optC = 0;
+optSigma = 0;
 minError = 1000;
-i = 1;
-do
-  j = 1;
-  C = initialC;
-  do
+
+for C = [.01, .03, .1, .3, 1, 3, 10, 30]
+  for sigma = [.01, .03, .1,.3, 1, 3, 10, 30]
+%    printf("checking model accuracy with C = %f sigma = %f", C, sigma);
     model= svmTrain(X, y, C, @(x1, x2) gaussianKernel(x1, x2, sigma));
-    printf("checking model accuracy with C = %f sigma = %f", C, sigma);
     predictions = svmPredict(model, Xval);
-    error = mean(double(predictions ~= yval))
+    error = mean(double(predictions ~= yval));
     if (error < minError)
       minError = error;
       optC = C;
       optSigma = sigma;
     endif
-    C = C*10;
-    j = j+1;
-   until(j == 5)
-  sigma = sigma*10;
-  i = i+1;
- until(i == 5)
- 
-C = optC
-sigma = optSigma
+  endfor
+ endfor 
+C = optC;
+sigma = optSigma;
+
 % =========================================================================
+
+
 end

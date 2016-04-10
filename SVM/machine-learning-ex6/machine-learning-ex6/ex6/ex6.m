@@ -65,6 +65,9 @@ fprintf('\nEvaluating the Gaussian Kernel ...\n')
 
 x1 = [1 2 1]; x2 = [0 4 -1]; sigma = 0.5;
 sim = gaussianKernel(x1, x2, sigma);
+sim2 = gaussianKernel(1,0,0.1)
+x3 = sin(1:6)'
+sim3 = gaussianKernel(x3, x3+1, 3)
 
 fprintf(['Gaussian Kernel between x1 = [1; 2; 1], x2 = [0; 4; -1], sigma = 0.5 :' ...
          '\n\t%f\n(this value should be about 0.324652)\n'], sim);

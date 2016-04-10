@@ -15,11 +15,11 @@ function centroids = computeCentroids(X, idx, K)
 
 % You need to return the following variables correctly.
 centroids = zeros(K, n);
-centroidSizes = zeros(K, n);
+centroidSizes = zeros(K, 1);
 for i=1:m
   centroidIndex = idx(i);
   centroids(centroidIndex, :) = centroids(centroidIndex, :) + X(i,:);
-  centroidSizes(centroidIndex) = centroidSizes + 1;
+  centroidSizes(centroidIndex) = centroidSizes(centroidIndex) + 1;
 endfor
 
 for i=1:K
